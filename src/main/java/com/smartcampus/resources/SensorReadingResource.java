@@ -6,6 +6,7 @@ import com.smartcampus.exceptions.SensorUnavailableException;
 import com.smartcampus.models.Sensor;
 import com.smartcampus.models.SensorReading;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -33,14 +34,16 @@ public class SensorReadingResource {
     public Response getReadings() {
         Sensor sensor = sensorDAO.getById(sensorId);
         List<SensorReading> idReadings = sensorReadingDAO.get(sensorId);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("sensorId", sensor.getId());
+        response.put("type", sensor.getType());
+        response.put("status", sensor.getStatus());
+        response.put("currentValue", sensor.getCurrentValue());
+        response.put("roomId", sensor.getRoomId());
+        response.put("readings", idReadings);
+
         return Response.status(Response.Status.OK)
-                .entity(Map.of("sensor", sensor.getId(),
-                        "type", sensor.getType(),
-                        "status", sensor.getStatus(),
-                        "currentValue", sensor.getCurrentValue(),
-                        "room", sensor.getRoomId(),
-                        "readings", idReadings)
-                )
+                .entity(response)
                 .build();
 
     }
