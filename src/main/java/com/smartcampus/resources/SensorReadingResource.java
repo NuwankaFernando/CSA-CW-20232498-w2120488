@@ -34,7 +34,7 @@ public class SensorReadingResource {
         Sensor sensor = sensorDAO.getById(sensorId);
         List<SensorReading> idReadings = sensorReadingDAO.get(sensorId);
         return Response.status(Response.Status.OK)
-                .entity(Map.of("sensorId", sensor.getId(),
+                .entity(Map.of("sensor", sensor.getId(),
                         "type", sensor.getType(),
                         "status", sensor.getStatus(),
                         "currentValue", sensor.getCurrentValue(),

@@ -103,6 +103,28 @@ public class SensorResource {
 
     }
 
+    @GET
+    @Path("/{sensorId}")
+    public Response getRoomById(@PathParam("sensorId") String sensorId) {
+
+        List<Sensor> sensors = sensorDAO.getAll();
+        for (Sensor s : sensors) {
+            if (s.getId().equals(sensorId)) {
+                return Response.status(Response.Status.OK)
+                        .entity(sensorDAO.getById(sensorId))
+                        .build();
+            }
+        }
+        return Response.status(Response.Status.NOT_FOUND)
+                .entity(
+                        Map.of(
+                                "status", 404,
+                                "error", "Not Found",
+                                "message", "Sensor '" + sensorId + "' not found."
+                        ))
+                .build();
+    }
+
     /* - Part 4: Deep Nesting with Sub - Resources (20 Marks)
     - 1. The Sub-Resource Locator Pattern (10 Marks) */
     @Path("/{sensorId}/readings")
