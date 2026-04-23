@@ -127,8 +127,8 @@ SmartCampusAPI/
 ### Step 1 — Clone the Repository
 
 ```bash
-git clone https://github.com/NuwankaFernando/Client-Server-CW-SmartcampusAPI.git
-cd Client-Server-CW-SmartcampusAPI
+git clone https://github.com/NuwankaFernando/CSA-CW-20232498-w2120488.git
+cd CSA-CW-20232498-w2120488
 ```
 
 ### Step 2 — Build the WAR File
