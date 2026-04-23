@@ -1,20 +1,16 @@
 package com.smartcampus;
 
-import com.smartcampus.resources.DiscoveryResource;
-import java.util.HashSet;
-import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-/* Part 1: Service Architecture & Setup (10 Marks) */
- /* 1. Project & ApplicationConfiguration (5 Marks) */
+/**
+ *
+ * @author Nuwanka Fernando - Part 1: Question 1
+ *
+ */
+// Configures the base URI for the Smart Campus REST API.
 @ApplicationPath("/api/v1")
 public class SmartCampusApplication extends Application {
-//
-//    @Override
-//    public Set<Class<?>> getClasses() {
-//        Set<Class<?>> classes = new HashSet<>();
-//        classes.add(DiscoveryResource.class);
-//        return classes;
-//    }
+
+    // No additional configuration required for basic JAX-RS setup
 }

@@ -19,22 +19,27 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/* Part 3: Sensor Operations & Linking (20 Marks) */
- /* Part 4: Deep Nesting with Sub - Resources (20 Marks) */
+/**
+ *
+ * @author Nuwanka Fernando - Part 4: Question 1 and 2
+ *
+ */
+// Resource class for managing sensors.
 @Path("/sensors")
 @Produces(MediaType.APPLICATION_JSON)
 public class SensorResource {
 
+    // Data access objects backed by mock in-memory storage
     private BaseDAO<Sensor> sensorDAO = new BaseDAO<>(MockDatabase.SENSORS);
     private BaseDAO<Room> roomDAO = new BaseDAO<>(MockDatabase.ROOMS);
 
-    /* - Part 3: Sensor Operations & Linking (20 Marks)
-    - 2. Filtered Retrieval & Search (10 Marks)*/
+    // Retrieves all sensors, optionally filtered by type.
     @GET
     public Response getAllSensors(@QueryParam("type") String type) {
 
         List<Sensor> sensors = sensorDAO.getAll();
 
+        // Apply filtering if query parameter is provided
         if (type != null && !type.isBlank()) {
             List<Sensor> typeSensors = new ArrayList<>();
 
@@ -49,17 +54,18 @@ public class SensorResource {
                     .build();
         }
 
+        // Return all sensors if no filter is applied
         return Response.status(Response.Status.OK)
                 .entity(sensors)
                 .build();
     }
 
-    /* - Part 3: Sensor Operations & Linking (20 Marks)
-    - 1.Sensor Resource & Integrity (10 Marks) */
+    // Creates a new sensor and links it to an existing room.
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addSensor(Sensor sensor) {
 
+        // Validate required sensor ID
         if (sensor == null || sensor.getId() == null || sensor.getId().isBlank()) {
             return Response.status(422)
                     .entity(Map.of(
@@ -70,6 +76,7 @@ public class SensorResource {
                     .build();
         }
 
+        // Check for duplicate sensor ID
         List<Sensor> sensors = sensorDAO.getAll();
         for (Sensor s : sensors) {
             if (s.getId().equals(sensor.getId())) {
@@ -83,31 +90,35 @@ public class SensorResource {
             }
         }
 
+        // Collect valid room IDs for validation
         List<Room> rooms = roomDAO.getAll();
         List<String> roomIds = new ArrayList<>();
         for (Room r : rooms) {
             roomIds.add(r.getId());
         }
 
-        /* - Part 5: Advanced Error Handling, Exception Mapping & Logging (30 Marks)
-        - 2. Dependency Validation (422 Unprocessable Entity) (10 Marks) */
+        // Ensure sensor is linked to an existing room
         if (!roomIds.contains(sensor.getRoomId())) {
-            throw new LinkedResourceNotFoundException(sensor.getRoomId());
+            throw new LinkedResourceNotFoundException("No room with ID '" + sensor.getRoomId() + "' does not exist.");
         }
 
+        // Persist sensor and update room linkage
         sensorDAO.add(sensor);
         roomDAO.getById(sensor.getRoomId()).getSensorIds().add(sensor.getId());
+
         return Response.status(Response.Status.CREATED)
                 .entity(sensor)
                 .build();
-
     }
 
+    // Retrieves a specific sensor by its ID.
     @GET
     @Path("/{sensorId}")
     public Response getRoomById(@PathParam("sensorId") String sensorId) {
 
         List<Sensor> sensors = sensorDAO.getAll();
+
+        // Search for matching sensor
         for (Sensor s : sensors) {
             if (s.getId().equals(sensorId)) {
                 return Response.status(Response.Status.OK)
@@ -115,21 +126,24 @@ public class SensorResource {
                         .build();
             }
         }
+
+        // Return 404 if sensor does not exist
         return Response.status(Response.Status.NOT_FOUND)
-                .entity(
-                        Map.of(
-                                "status", 404,
-                                "error", "Not Found",
-                                "message", "Sensor '" + sensorId + "' not found."
-                        ))
+                .entity(Map.of(
+                        "status", 404,
+                        "error", "Not Found",
+                        "message", "Sensor '" + sensorId + "' not found."
+                ))
                 .build();
     }
 
-    /* - Part 4: Deep Nesting with Sub - Resources (20 Marks)
-    - 1. The Sub-Resource Locator Pattern (10 Marks) */
+    // Delegates requests to SensorReadingResource if sensor exists
     @Path("/{sensorId}/readings")
     public SensorReadingResource getReadingResource(@PathParam("sensorId") String sensorId) {
+
         Sensor sensor = sensorDAO.getById(sensorId);
+
+        // Validate sensor existence before delegating
         if (sensor == null) {
             throw new WebApplicationException(
                     Response.status(Response.Status.NOT_FOUND)
@@ -142,7 +156,8 @@ public class SensorResource {
                             .build()
             );
         }
+
+        // Return sub-resource for handling nested routes
         return new SensorReadingResource(sensorId);
     }
-
 }

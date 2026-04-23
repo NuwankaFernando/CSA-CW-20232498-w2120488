@@ -1,14 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.smartcampus.exceptions;
 
-/* - Part 5: Advanced Error Handling, Exception Mapping & Logging (30 Marks)
- - 2. Dependency Validation (422 Unprocessable Entity) (10 Marks) */
+/**
+ *
+ * @author Nuwanka Fernando - Part 5: Question 2
+ *
+ */
+// Exception thrown when a required linked resource
 public class LinkedResourceNotFoundException extends RuntimeException {
 
-    public LinkedResourceNotFoundException(String roomID) {
-        super("No room with ID '" + roomID + "' does not exist.");
+    // Constructs a new LinkedResourceNotFoundException with a detail message.
+    public LinkedResourceNotFoundException(String message) {
+        super(message);
     }
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.smartcampus.mappers;
 
 import com.smartcampus.exceptions.SensorUnavailableException;
@@ -11,13 +7,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-/* - Part 5: Advanced Error Handling, Exception Mapping & Logging (30 Marks)
-   - 3. State Constraint (403 Forbidden) (5 Marks) */
+/**
+ *
+ * @author Nuwanka Fernando - Part 5: Question 3
+ *
+ */
+// Exception mapper for handling sensor state constraints.
 @Provider
-public class SensorUnavailableExceptionMapper implements ExceptionMapper<SensorUnavailableException> {
+public class SensorUnavailableExceptionMapper
+        implements ExceptionMapper<SensorUnavailableException> {
 
+    // Converts SensorUnavailableException into HTTP 403 response.
     @Override
     public Response toResponse(SensorUnavailableException ex) {
+
+        // Return structured forbidden error response
         return Response.status(Response.Status.FORBIDDEN)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(Map.of(

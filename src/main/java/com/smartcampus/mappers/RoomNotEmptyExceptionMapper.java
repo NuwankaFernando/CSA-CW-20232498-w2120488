@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.smartcampus.mappers;
 
 import com.smartcampus.exceptions.RoomNotEmptyException;
@@ -11,13 +7,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-/* - Part 5: Advanced Error Handling, Exception Mapping & Logging (30 Marks)
- - 1. Resource Conflict (409) (5 Marks) */
+/**
+ *
+ * @author Nuwanka Fernando - Part 5: Question 1
+ *
+ */
+// Exception mapper for handling room deletion conflicts.
 @Provider
-public class RoomNotEmptyExceptionMapper implements ExceptionMapper<RoomNotEmptyException> {
+public class RoomNotEmptyExceptionMapper
+        implements ExceptionMapper<RoomNotEmptyException> {
 
+    // Converts RoomNotEmptyException into HTTP 409 response.
     @Override
     public Response toResponse(RoomNotEmptyException ex) {
+
+        // Return structured conflict error response
         return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(Map.of(

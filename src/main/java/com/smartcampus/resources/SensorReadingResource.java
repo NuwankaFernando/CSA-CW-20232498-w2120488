@@ -16,24 +16,34 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/* - Part 4: Deep Nesting with Sub - Resources (20 Marks)
-    - 2. Historical Data Management (10 Marks) */
+/**
+ *
+ * @author Nuwanka Fernando - Part 4: Question 2
+ *
+ */
+// Handles retrieval and creation of historical readings for a specific sensor (nested resource).
 @Produces(MediaType.APPLICATION_JSON)
 public class SensorReadingResource {
 
     private final String sensorId;
 
+    // In-memory data sources
     private Map<String, List<SensorReading>> sensorReadingDAO = MockDatabase.READINGS;
     private BaseDAO<Sensor> sensorDAO = new BaseDAO<>(MockDatabase.SENSORS);
 
+    // Constructor initializes resource with a specific sensor ID.
     public SensorReadingResource(String sensorId) {
         this.sensorId = sensorId;
     }
 
+    // Retrieves all readings associated with the given sensor.
     @GET
     public Response getReadings() {
+
         Sensor sensor = sensorDAO.getById(sensorId);
         List<SensorReading> idReadings = sensorReadingDAO.get(sensorId);
+
+        // Construct structured response with sensor metadata + readings
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("sensorId", sensor.getId());
         response.put("type", sensor.getType());
@@ -45,19 +55,20 @@ public class SensorReadingResource {
         return Response.status(Response.Status.OK)
                 .entity(response)
                 .build();
-
     }
 
+    // Adds a new reading to the specified sensor.
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+
     public Response addReading(SensorReading reading) {
 
-        /* - Part 5: Advanced Error Handling, Exception Mapping & Logging (30 Marks)
-       - 3. State Constraint (403 Forbidden) (5 Marks) */
+        // Reject updates if sensor is under maintenance
         if ("MAINTENANCE".equalsIgnoreCase(sensorDAO.getById(sensorId).getStatus())) {
-            throw new SensorUnavailableException(sensorId);
+            throw new SensorUnavailableException("Sensor '" + sensorId + "' is under MAINTENANCE.");
         }
 
+        // Validate request body
         if (reading == null) {
             return Response.status(422)
                     .entity(Map.of(
@@ -68,18 +79,23 @@ public class SensorReadingResource {
                     .build();
         }
 
-        // Auto-generate ID and timestamp if not provided
+        // Create a new reading instance (ensures ID/timestamp handling internally)
         SensorReading newReading = new SensorReading(reading.getValue());
+
+        // Initialize list if no readings exist for this sensor
         if (sensorReadingDAO.get(sensorId) == null) {
             sensorReadingDAO.put(sensorId, new ArrayList<>());
-
         }
+
+        // Persist reading in mock database
         sensorReadingDAO.get(sensorId).add(reading);
 
-        // Side effect: keep parent sensor's currentValue in sync
+        // Keep sensor's current value synchronized with latest reading
         sensorDAO.getById(sensorId).setCurrentValue(reading.getValue());
 
-        return Response.status(Response.Status.CREATED).entity(newReading).build();
+        // Return 201 Created with newly created reading
+        return Response.status(Response.Status.CREATED)
+                .entity(newReading)
+                .build();
     }
-
 }
